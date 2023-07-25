@@ -1,0 +1,21 @@
+name: npm-test
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  npm-publish:
+    name: npm-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout vuepress-plugin-locale-redirect source code
+        uses: actions/checkout@v3
+
+      - name: Set up node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: '18'
+
+      - name: Test
+        run: npm install && npm run build && npm run test
