@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 export * from './decoder'
 export * from './encoder'
 export * from './type'
