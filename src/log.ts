@@ -1,4 +1,3 @@
-// 根据jest的node env判断当前是否处于测试环境
 let BENCODE_DEBUG_ENABLE = true
 
 export function disableDebug() {

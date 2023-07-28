@@ -1,8 +1,8 @@
-# node-bencode
+# node-bencode [![npm version](https://badge.fury.io/js/sloaix-node-bencode.svg)](https://badge.fury.io/js/sloaix-node-bencode)
 
 Bencode encoding and decoding, with both library and CLI versions available.
 
-The CLI version can decode bencode-formatted data from files or strings and output the result in JSON format.
+The bencode cli can decode bencode-formatted data from files or strings and output the result in JSON format.
 
 ## Installtion
 
@@ -55,6 +55,8 @@ option `-p` means output will be pretty json, otherwise it will be a single line
 ### Encode
 
 ```typescript
+  import { Bencoder } from 'sloaix-node-bencode'
+
   const data = 'hello'
   // const data = 123
   // const data = [1, 2, 3]
@@ -78,6 +80,7 @@ option `-p` means output will be pretty json, otherwise it will be a single line
 ### Decode
 
 ```typescript
+  import { Bdecoder } from 'sloaix-node-bencode'
 
   // decode bitTorrent file
   const torrent = './ubuntu-22.04.2-live-server-amd64.iso.torrent'
@@ -114,4 +117,24 @@ option `-p` means output will be pretty json, otherwise it will be a single line
   //     162,
   //     55,
   // ....
+```
+
+## Test
+
+```bash
+npm i && npm run build && npm run test
+
+# output:
+# PASS  __test__/encode.test.ts
+# RUNS  __test__/decoder.test.ts
+# RUNS  __test__/encode.test.ts
+# RUNS  __test__/cli.test.ts
+
+# Test Suites: 0 of 3 total
+# Tests:       3 passed, 3 total
+# Test Suites: 3 passed, 3 total
+# Tests:       35 passed, 35 total
+# Snapshots:   0 total
+# Time:        3.17 s
+# Ran all test suites.
 ```
