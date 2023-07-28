@@ -24,34 +24,6 @@ yarn add -D sloaix-node-bencode
 
 ## Usage
 
-### CLI
-
-option `-f` means argument is a file path, otherwise it will be treated as a string.
-
-option `-p` means output will be pretty json, otherwise it will be a single line.
-
-```bash
-  # base usage
-
-  # will out put "hello"
-  bencode decode '5:hello' 
-
-  # will output 123
-  bencode decode 'i123e'
-
-  # will output [1, 2, 3]
-  bencode decode 'li1ei2ei3ee'
-
-  # will output { a: 1, b: 2, c: 3 }
-  bencode decode 'd1:ai1e1:bi2e1:ci3ee'
-
-  # decode from file and print compressed json
-  bencode decode -f ./ubuntu-22.04.2-live-server-amd64.iso.torrent
-
-  # decode from file and print pretty json, output to file
-  bencode decode -fp ./ubuntu-22.04.2-live-server-amd64.iso.torrent > ./ubuntu.json
-```
-
 ### Encode
 
 ```typescript
