@@ -12,7 +12,7 @@ npm i -g sloaix-node-bencode
 
 pnpm i -g sloaix-node-bencode
 
-yarn add gloabl sloaix-node-bencode
+yarn add global sloaix-node-bencode
 
 # use as a libary
 npm i -D sloaix-node-bencode
