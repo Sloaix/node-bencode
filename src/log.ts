@@ -1,4 +1,4 @@
-let BENCODE_DEBUG_ENABLE = true
+let BENCODE_DEBUG_ENABLE = false
 
 export function disableDebug() {
   BENCODE_DEBUG_ENABLE = false
