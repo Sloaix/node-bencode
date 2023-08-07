@@ -87,4 +87,22 @@ describe('dictionary', () => {
   test('encode empty dictionary', () => {
     expect(encoder.encode({})).toStrictEqual(textEncoder.encode('de'))
   })
+
+  // bittorrent 编码测试
+  test('encode complex dictionary', () => {
+    const torrentStructure = {
+      announce: 'https://www.github.com',
+      'created by': 'sloaix-node-bencode',
+      'creation date': Math.floor(Date.now() / 1000),
+      info: {
+        name: 'hello.txt',
+        'piece length': 16 * 1024,
+        length: 5,
+        pieces: new Uint8Array([
+          170, 244, 198, 29, 220, 197, 232, 162, 218, 190, 222, 15, 59, 72, 44, 217, 174, 169, 67, 77
+        ])
+      }
+    }
+    console.log(Buffer.from(encoder.encode(torrentStructure)).toString('hex'))
+  })
 })

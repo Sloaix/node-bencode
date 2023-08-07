@@ -1,6 +1,6 @@
 {
   "name": "sloaix-node-bencode",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Bencode encoding and decoding, with both library and CLI versions available. The CLI version can decode bencode-formatted data from files or strings and output the result in JSON format.",
   "keywords": [
     "bencode",

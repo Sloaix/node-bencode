@@ -11,7 +11,7 @@ import {
 } from './type'
 
 export class Bencoder {
-  private encoder: TextEncoder = new TextEncoder()
+  private te: TextEncoder = new TextEncoder()
 
   encode(data: BencodeType) {
     if (isBencodeString(data)) {
@@ -51,12 +51,12 @@ export class Bencoder {
 
     // 将Buffer类型的数据转换为字节字符串
     if (byteString instanceof Buffer) {
-      byteString = byteString.toString('binary')
+      byteString = byteString.toString('utf-8')
     }
 
     // 字符串的编码格式为：字符串的长度 + ':' + 字符串
     // 例如：4:spam
-    const buffers: Uint8Array[] = [this.encoder.encode(`${byteString.toString().length}:`)]
+    const buffers: Uint8Array[] = [this.te.encode(`${byteString.toString().length}:`)]
 
     buffers.push(Buffer.from(byteString))
 
@@ -73,7 +73,7 @@ export class Bencoder {
     }
     // 数字的编码格式为：'i' + 数字 + 'e'
     // 例如：i3e或者 i-5e
-    return this.encoder.encode(`i${integer}e`)
+    return this.te.encode(`i${integer}e`)
   }
 
   /**
@@ -82,7 +82,7 @@ export class Bencoder {
    */
   private encodeList(list: BencodeList): Uint8Array {
     logd(` start encodeList`)
-    const buffers: Uint8Array[] = [this.encoder.encode('l')]
+    const buffers: Uint8Array[] = [this.te.encode('l')]
     // 遍历列表中的元素
     for (const element of list) {
       logd(` start itre ${element}`)
@@ -91,7 +91,7 @@ export class Bencoder {
     }
     logd(` end encodeList`)
 
-    buffers.push(this.encoder.encode('e'))
+    buffers.push(this.te.encode('e'))
 
     return Uint8Array.from(Buffer.concat(buffers))
   }
@@ -102,7 +102,7 @@ export class Bencoder {
    */
   private encodeDict(dict: BencodeDict): Uint8Array {
     // 字典的编码格式为：'d' + 字典中的key-value + 'e'
-    const buffers: Uint8Array[] = [this.encoder.encode('d')]
+    const buffers: Uint8Array[] = [this.te.encode('d')]
 
     // 创建一个数组,用于存储字典的key
     let keys: string[] = Object.keys(dict)
@@ -124,7 +124,7 @@ export class Bencoder {
     }
 
     // 写入结束符 e
-    buffers.push(this.encoder.encode('e'))
+    buffers.push(this.te.encode('e'))
     return Uint8Array.from(Buffer.concat(buffers))
   }
 }
