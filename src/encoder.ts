@@ -56,7 +56,11 @@ export class Bencoder {
 
     // 字符串的编码格式为：字符串的长度 + ':' + 字符串
     // 例如：4:spam
-    return this.encoder.encode(`${byteString.toString().length}:${byteString}`)
+    const buffers: Uint8Array[] = [this.encoder.encode(`${byteString.toString().length}:`)]
+
+    buffers.push(Buffer.from(byteString))
+
+    return Uint8Array.from(Buffer.concat(buffers))
   }
 
   /**
