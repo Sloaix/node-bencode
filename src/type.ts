@@ -1,7 +1,7 @@
 export type BencodeInteger = number
 export type BencodeDict = { [key: string]: BencodeType }
 export type BencodeList = Array<BencodeType>
-export type BencodeString = string
+export type BencodeString = string | Uint8Array | Buffer
 export type BencodeType = BencodeInteger | BencodeDict | BencodeList | BencodeString
 
 export function isBencodeInteger(data: BencodeType): data is BencodeInteger {
@@ -17,5 +17,5 @@ export function isBencodeList(data: BencodeType): data is BencodeList {
 }
 
 export function isBencodeString(data: BencodeType): data is BencodeString {
-  return typeof data === 'string' || data instanceof Uint8Array || data instanceof Buffer || data instanceof ArrayBuffer
+  return typeof data === 'string' || data instanceof Uint8Array || data instanceof Buffer
 }

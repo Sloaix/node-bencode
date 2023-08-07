@@ -12,6 +12,16 @@ describe('string', () => {
   test('encode empty string', () => {
     expect(encoder.encode('')).toStrictEqual(textEncoder.encode('0:'))
   })
+
+  test('encode buffer string', () => {
+    const buffer = Buffer.from([0x68, 0x65, 0x6c, 0x6c, 0x6f])
+    expect(encoder.encode(buffer)).toStrictEqual(textEncoder.encode('5:hello'))
+  })
+
+  test('encode Uint8Array string', () => {
+    const u8 = new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0x6f])
+    expect(encoder.encode(u8)).toStrictEqual(textEncoder.encode('5:hello'))
+  })
 })
 
 // 整数编码测试

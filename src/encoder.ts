@@ -44,6 +44,16 @@ export class Bencoder {
       throw new Error("undefined or null string isn't be supported to be encode")
     }
 
+    // 将除string外非Buffer类型的数据转换为Buffer
+    if (byteString instanceof Uint8Array) {
+      byteString = Buffer.from(byteString)
+    }
+
+    // 将Buffer类型的数据转换为字节字符串
+    if (byteString instanceof Buffer) {
+      byteString = byteString.toString('binary')
+    }
+
     // 字符串的编码格式为：字符串的长度 + ':' + 字符串
     // 例如：4:spam
     return this.encoder.encode(`${byteString.toString().length}:${byteString}`)
