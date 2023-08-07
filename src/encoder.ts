@@ -34,31 +34,28 @@ export class Bencoder {
 
   /**
    * 编码字节字符串
-   * @param byteString 字节字符串
+   * @param bufferString 字节字符串
    *
    * 支持编码空字符串,例如 0:
    * 但不支持null或者undefined
    */
-  private encodeByteString(byteString: BencodeString): Uint8Array {
-    if (byteString === null || byteString === undefined) {
+  private encodeByteString(bufferString: BencodeString): Uint8Array {
+    if (bufferString === null || bufferString === undefined) {
       throw new Error("undefined or null string isn't be supported to be encode")
     }
 
-    // 将除string外非Buffer类型的数据转换为Buffer
-    if (byteString instanceof Uint8Array) {
-      byteString = Buffer.from(byteString)
+    // 如果不是Buffer,则转换为Buffer
+    if (!(bufferString instanceof Buffer)) {
+      bufferString = Buffer.from(bufferString)
     }
 
-    // 将Buffer类型的数据转换为字节字符串
-    if (byteString instanceof Buffer) {
-      byteString = byteString.toString('utf-8')
-    }
+    // 字符串的编码格式为：字符串的长度 + ':' + 字符串,例如：4:spam
 
-    // 字符串的编码格式为：字符串的长度 + ':' + 字符串
-    // 例如：4:spam
-    const buffers: Uint8Array[] = [this.te.encode(`${byteString.toString().length}:`)]
+    // 编码字符串的长度
+    const buffers: Uint8Array[] = [this.te.encode(`${bufferString.length}:`)]
 
-    buffers.push(Buffer.from(byteString))
+    // 编码字符串内容
+    buffers.push(bufferString)
 
     return Uint8Array.from(Buffer.concat(buffers))
   }
