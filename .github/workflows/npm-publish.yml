@@ -9,7 +9,7 @@ jobs:
     name: npm-publish
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout vuepress-plugin-locale-redirect source code
+      - name: Checkout 
         uses: actions/checkout@v3
 
       - name: Check Commit Type
