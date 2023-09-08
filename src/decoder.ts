@@ -1,12 +1,75 @@
-import { isUtf8 } from 'node:buffer'
 import { logd } from './log'
 import { BencodeDict, BencodeInteger, BencodeList, BencodeString, BencodeType } from './type'
+import { isUtf8 } from './util'
 
 export class Bdecoder {
   private curosr: number = 0
   private textDecoder: TextDecoder = new TextDecoder()
 
-  decode(data: Uint8Array): BencodeType | null {
+  /**
+   * 只有在字典(dict)的key不是一个有效的utf8编码的字符串时,才会返回true
+   * 判断字符串是否是未解码的字节字符串,例如Unit8Array[1,2,3]这种格式的字符串
+   *
+   * 由于字节字符串中可能包含非utf8编码的字符,所以无法转换成字符串,因为转换成字符串后可能会丢失数据,
+   *
+   * 所以返回了一个Unit8Array[1,2,3]这种格式的字符串,这个字符串可以通过undecodingByteString2Unit8Array方法转换成Uint8Array
+   * @param keyOfDict 字典的key
+   * @returns true or false
+   */
+  static isByteKey(keyOfDict: string) {
+    if (typeof keyOfDict !== 'string') {
+      return false
+    }
+
+    // 校验格式
+    if (!keyOfDict.startsWith('Unit8Array[') || !keyOfDict.endsWith(']')) {
+      return false
+    }
+
+    // 获取数组元素,每个元素都是一个integer,长度8位,范围0-255
+    const elements = keyOfDict.replace('Unit8Array[', '').replace(']', '').split(',')
+
+    // 校验每个元素是否是integer,并且范围在0-255之间
+    try {
+      for (const element of elements) {
+        const num = parseInt(element)
+        if (!Number.isInteger(num)) {
+          return false
+        }
+
+        if (num < 0 || num > 255) {
+          return false
+        }
+      }
+    } catch (_) {
+      return false
+    }
+
+    // 校验通过
+    return true
+  }
+
+  /**
+   * 将没有解码的字节字符串转换成Uint8Array,例如Unit8Array[1,2,3]这种格式的字符串，'Unit8Array[1,2,3]' => Uint8Array.from([1,2,3])
+   * @param value Unit8Array[1,2,3]这种格式的字符串
+   * @returns Uint8Array,如果转换失败,则返回undefined
+   */
+  static byteKeyToUint8Array(value: string): Uint8Array | undefined {
+    if (!this.isByteKey(value)) {
+      return undefined
+    }
+
+    const elements = value.replace('Unit8Array[', '').replace(']', '').split(',')
+    const bytes = new Uint8Array(elements.length)
+
+    for (let i = 0; i < elements.length; i++) {
+      bytes[i] = parseInt(elements[i])
+    }
+
+    return bytes
+  }
+
+  decode(data: Uint8Array): BencodeType | undefined {
     // 重置游标
     this.curosr = 0
     return this.parse(data)
@@ -40,7 +103,7 @@ export class Bdecoder {
     this.curosr -= length
   }
 
-  private parse(data: Uint8Array): BencodeType | null {
+  private parse(data: Uint8Array): BencodeType | undefined {
     // 读取头部字节,用于判断需要解析的数据类型
     const bytes = this.readBytes(data)
 
@@ -48,7 +111,7 @@ export class Bdecoder {
 
     if (bytes.length === 0) {
       logd('[decode] head bytes is null, return null')
-      return null
+      return undefined
     }
 
     switch (String.fromCharCode(bytes[0])) {
@@ -88,7 +151,7 @@ export class Bdecoder {
     return integer
   }
 
-  private decodeByteString(data: Uint8Array): BencodeString | number[] {
+  private decodeByteString(data: Uint8Array): BencodeString | Uint8Array {
     logd(`[decodeByteString] start read string bytes length`)
 
     // 获取字符串的长度
@@ -114,7 +177,7 @@ export class Bdecoder {
     } else {
       logd(`[decodeByteString] string is not utf8, return number array`)
       // 否则转换成number数组,由于js中没有byte类型,所以只能用number数组来表示字节
-      return Array.from(stringBuffer)
+      return stringBuffer
     }
   }
 
@@ -165,7 +228,13 @@ export class Bdecoder {
 
       logd(`[decodeDict] start parse dict key`)
       // 解析key
-      const key = this.decodeByteString(data).toString()
+      let key = this.decodeByteString(data)
+
+      // 处理当返回的key是Uint8Array的情况,因为此时的byte string中包含了非utf8编码的字符,导致转换成JS字符串后可能会丢失数据
+      // 所以这里直接把Unit8Array转换数组
+      if (key instanceof Uint8Array) {
+        key = `Unit8Array[${Array.from(key).join(',')}]`
+      }
 
       logd(`[decodeDict] key is '${key}'`)
 

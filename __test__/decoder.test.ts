@@ -94,3 +94,33 @@ describe('torrent', () => {
     expect(torrentObj).toHaveProperty('info.pieces.length', 150760)
   })
 })
+
+// 解码当含有非utf8编码的字节字符串作为字典的key时
+describe('decode byte string as dict key', () => {
+  const decoder = new Bdecoder()
+
+  const bytes = readFileSync(join(__dirname, 'tracker/ubuntu_tracker_scrape'))
+
+  const result = decoder.decode(bytes) as {
+    files: {
+      // 这里的key是info_hash,是一个字节字符串,由于不是utf8编码,所以无法解码为字符串,否则会丢失数据
+      // 所以返回的形式是"Unit8Array[xx,xx,xx,xx,xx,xx,xx,xx,xx,xx]"这种字符串形式
+      [key: string]: {
+        complete: number
+        downloaded: number
+        incomplete: number
+        name: string
+      }
+    }
+  }
+
+  expect(Object.keys(result.files)[0]).toStrictEqual(
+    'Unit8Array[0,70,120,242,226,120,16,48,188,87,115,122,135,250,247,170,251,23,79,248]'
+  )
+
+  expect(true).toStrictEqual(Bdecoder.isByteKey(Object.keys(result.files)[0]))
+
+  expect(Bdecoder.byteKeyToUint8Array(Object.keys(result.files)[0])).toStrictEqual(
+    Uint8Array.from([0, 70, 120, 242, 226, 120, 16, 48, 188, 87, 115, 122, 135, 250, 247, 170, 251, 23, 79, 248])
+  )
+})

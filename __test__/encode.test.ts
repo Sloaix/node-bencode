@@ -54,7 +54,6 @@ describe('integer', () => {
 // 列表编码测试
 describe('list', () => {
   test('encode simple list', () => {
-    console.log(encoder.encode([1, 2, 3]))
     expect(encoder.encode([1, 2, 3])).toStrictEqual(textEncoder.encode('li1ei2ei3ee'))
   })
 
